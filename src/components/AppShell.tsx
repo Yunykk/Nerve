@@ -5,9 +5,17 @@ import { Topbar } from './Topbar'
 interface AppShellProps {
   readonly children: ReactNode
   readonly rightRail: ReactNode
+  readonly title?: string
+  readonly subtitle?: string
 }
 
-export function AppShell({ children, rightRail }: AppShellProps) {
+export function AppShell({ 
+  children, 
+  rightRail,
+  title,
+  subtitle, 
+}: AppShellProps) {
+
   return (
     <div className="app-shell">
       <a className="skip-link" href="#main-content">
@@ -17,7 +25,7 @@ export function AppShell({ children, rightRail }: AppShellProps) {
       <Sidebar />
 
       <div className="workspace">
-        <Topbar />
+        <Topbar title={title} subtitle={subtitle} />
         <div className="home-columns">
           <main id="main-content" className="home-main" tabIndex={-1}>
             {children}

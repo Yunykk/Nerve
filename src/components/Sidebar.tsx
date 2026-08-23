@@ -4,34 +4,41 @@ import { Icon, type IconName } from './Icon'
 interface NavItem {
   readonly label: string
   readonly icon: IconName
-  readonly current?: boolean
+  readonly href?: '#home' | '#timeline' | '#projects' | '#world' | '#surfaces'
 }
 
 const NAV_ITEMS: readonly NavItem[] = [
-  { label: 'Home', icon: 'home', current: true },
+  { label: 'Home', icon: 'home', href: '#home' },
   { label: 'Timeline', icon: 'timeline' },
-  { label: 'Projects', icon: 'projects' },
+  { label: 'Projects', icon: 'projects', href: '#projects' },
   { label: 'World', icon: 'world' },
   { label: 'Surfaces', icon: 'surfaces' },
 ]
 
 export function Sidebar() {
+  const currentHref =
+    window.location.hash === '#projects' ? '#projects' : '#home'
   return (
     <aside className="sidebar" aria-label="Primary navigation">
       <div className="sidebar__brand">nerve</div>
 
       <nav className="sidebar__nav">
-        {NAV_ITEMS.map((item) => (
-          <button
-            key={item.label}
-            className={'sidebar__item' + (item.current ? ' is-current' : '')}
-            type="button"
-            aria-current={item.current ? 'page' : undefined}
-          >
-            <Icon name={item.icon} />
-            <span>{item.label}</span>
-          </button>
-        ))}
+        {NAV_ITEMS.map((item) => {
+          const isCurrent = item.href === currentHref
+
+          return (
+            <a
+              key={item.label}
+              className={'sidebar__item' + (isCurrent ? ' is-current' : '')}
+              href={item.href}
+              aria-current={isCurrent ? 'page' : undefined}
+              aria-disabled={item.href ? undefined : true}
+            >
+              <Icon name={item.icon} />
+              <span>{item.label}</span>
+            </a>
+          )
+        })}
       </nav>
 
       <div className="sidebar__footer">

@@ -3,24 +3,38 @@ import { Icon, type IconName } from './Icon'
 interface ProjectRowProps {
   readonly name: string
   readonly description: string
-  readonly tasks: number
+  readonly sessions: number
   readonly progress: number
   readonly barProgress?: number
   readonly mark?: string
   readonly icon?: IconName
+  readonly actionLabel?: string
+  readonly active?: boolean
+  readonly disabled?: boolean
+  readonly onClick?: () => void
 }
 
 export function ProjectRow({
   name,
   description,
-  tasks,
+  sessions,
   progress,
   barProgress = progress,
   mark,
   icon,
+  actionLabel,
+  active,
+  disabled,
+  onClick,
 }: ProjectRowProps) {
   return (
-    <button className="project-row" type="button">
+    <button
+      className={'project-row' + (active ? ' is-active' : '')}
+      type="button"
+      disabled={disabled}
+      aria-pressed={active}
+      onClick={onClick}
+    >
       <span className="project-row__mark" aria-hidden="true">
         {mark ?? (icon ? <Icon name={icon} /> : null)}
       </span>
@@ -31,13 +45,15 @@ export function ProjectRow({
       </span>
 
       <span className="project-row__tasks">
-        {tasks} {tasks === 1 ? 'task' : 'tasks'} today
+        {sessions} {sessions === 1 ? 'session' : 'sessions'} today
       </span>
 
       <span className="project-row__progress" aria-hidden="true">
         <span style={{ width: barProgress + '%' }} />
       </span>
-      <span className="project-row__percent">{progress}%</span>
+      <span className="project-row__percent">
+        {actionLabel ?? progress + '%'}
+      </span>
       <Icon className="project-row__chevron" name="chevron" />
     </button>
   )

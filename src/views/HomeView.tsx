@@ -1,7 +1,18 @@
+import {
+  selectActiveSession,
+  selectEntities,
+  selectEntity,
+  selectSessionDuration,
+  selectSessionSlicesForDay,
+  selectTrackedTimeForDay,
+} from '../domain/selectors'
 import { Button } from '../components/Button'
 import { Icon } from '../components/Icon'
 import { Panel } from '../components/Panel'
 import { ProjectRow } from '../components/ProjectRow'
+import { useClock } from '../hooks/useClock'
+import { formatDuration } from '../lib/format'
+import { useNerve } from '../state/useNerve'
 
 const ATTENTION_ITEMS = [
   { label: 'Coding', duration: '3h 10m', tone: 'dark' },
@@ -10,30 +21,74 @@ const ATTENTION_ITEMS = [
   { label: 'Offline', duration: '2h 10m', tone: 'pale' },
 ] as const
 
+const DAILY_FOCUS_TARGET_MS = 4 * 60 * 60 * 1_000
+
 export function HomeView() {
+  const { state, actions, pending } = useNerve()
+
+  const activeSession = selectActiveSession(state)
+  const projects = selectEntities(state, 'project').filter(
+    (project) => project.status === 'active',
+  )
+
+  const activeProject = activeSession
+    ? selectEntity(state, activeSession.projectId)
+    : undefined
+
+  const now = useClock(activeSession ? 1000 : 60_000)
+
+  const elapsed = activeSession
+    ? selectSessionDuration(activeSession, now)
+    : 0
+
   return (
     <>
       <Panel className="focus-panel">
         <h2>Current focus</h2>
 
         <div className="focus-panel__body">
-          <div className="focus-mark" aria-hidden="true">N</div>
+          <div className="focus-mark" aria-hidden="true">
+            {activeProject?.name.charAt(0).toUpperCase() ?? '—'}
+          </div>
+
           <div className="focus-copy">
-            <span>Nerve</span>
-            <strong>Build the system architecture</strong>
+            <span>{activeSession ? 'Active focus' : 'System idle'}</span>
+
+            <strong>
+              {activeProject?.name ?? 'No active session'}
+            </strong>
+
             <div className="focus-meta">
-              <span><Icon name="focus" />Deep work</span>
+              <span>
+                <Icon name="focus" />
+                {activeSession ? 'Deep work' : 'Ready'}
+              </span>
+
               <i aria-hidden="true">·</i>
-              <span>Architecture</span>
+
+              <span>
+                {activeProject?.description || 'Choose a project to begin'}
+              </span>
             </div>
           </div>
 
           <div className="focus-timer">
-            <time dateTime="PT1H26M14S">01:26:14</time>
-            <div className="focus-actions">
-              <Button><Icon name="pause" />Pause</Button>
-              <Button variant="solid"><Icon name="finish" />Finish</Button>
-            </div>
+            <time dateTime={'PT' + Math.floor(elapsed / 1_000) + 'S'}>
+              {formatDuration(elapsed)}
+            </time>
+
+            {activeSession && (
+              <div className="focus-actions">
+                <Button
+                  variant="solid"
+                  disabled={pending}
+                  onClick={() => void actions.stopSession()}
+                >
+                  <Icon name="finish" />
+                  {pending ? 'Ending…' : 'End session'}
+                </Button>
+              </div>
+            )}
           </div>
         </div>
       </Panel>
@@ -69,9 +124,59 @@ export function HomeView() {
       <section className="projects-section" aria-labelledby="projects-title">
         <h2 id="projects-title">Active projects</h2>
         <Panel className="project-list">
-          <ProjectRow name="Nerve" description="LifeOS for humans" tasks={3} progress={72} barProgress={84.2} mark="N" />
-          <ProjectRow name="Inboxless" description="Zero inbox lifestyle" tasks={2} progress={58} barProgress={64.1} icon="inbox" />
-          <ProjectRow name="Time" description="Watch it. Own it." tasks={1} progress={34} barProgress={41.1} icon="clock" />
+          {projects.length ? (
+            projects.slice(0, 3).map((project) => {
+              const isActive = activeSession?.projectId === project.id
+              const unavailable = Boolean(activeSession && !isActive)
+              const sessionsToday = selectSessionSlicesForDay(
+                state,
+                now,
+                project.id,
+              ).length
+              const trackedToday = selectTrackedTimeForDay(
+                state,
+                now,
+                project.id,
+              )
+
+              return (
+                <ProjectRow
+                  key={project.id}
+                  name={project.name}
+                  description={project.description || 'No description'}
+                  sessions={sessionsToday}
+                  progress={0}
+                  barProgress={Math.min(
+                    (trackedToday / DAILY_FOCUS_TARGET_MS) * 100,
+                    100,
+                  )}
+                  mark={project.name.charAt(0).toUpperCase()}
+                  actionLabel={
+                    isActive
+                      ? pending
+                        ? 'Ending…'
+                        : 'End'
+                      : unavailable
+                        ? 'Busy'
+                        : pending
+                          ? 'Wait…'
+                          : 'Start'
+                  }
+                  active={isActive}
+                  disabled={pending || unavailable}
+                  onClick={() =>
+                    void (
+                      isActive
+                        ? actions.stopSession()
+                        : actions.startSession(project.id)
+                    )
+                  }
+                />
+              )
+            })
+          ) : (
+            <p className="project-list__empty">No active projects yet.</p>
+          )}
         </Panel>
       </section>
 
