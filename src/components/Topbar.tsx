@@ -2,8 +2,8 @@ import { useClock } from '../hooks/useClock'
 import { Icon } from './Icon'
 
 interface TopbarProps {
-  readonly title?: string
-  readonly subtitle?: string
+  readonly title?: string | undefined
+  readonly subtitle?: string | undefined
 }
 
 

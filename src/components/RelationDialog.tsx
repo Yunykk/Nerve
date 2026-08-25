@@ -89,7 +89,7 @@ export function RelationDialog({ project, goals, onClose }: RelationDialogProps)
             Cancel
           </button>
           <button
-            className="button button--primary"
+            className="button button--solid"
             type="submit"
             disabled={pending || !goalId}
           >

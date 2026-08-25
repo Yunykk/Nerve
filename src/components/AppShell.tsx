@@ -5,8 +5,8 @@ import { Topbar } from './Topbar'
 interface AppShellProps {
   readonly children: ReactNode
   readonly rightRail: ReactNode
-  readonly title?: string
-  readonly subtitle?: string
+  readonly title?: string | undefined
+  readonly subtitle?: string | undefined
 }
 
 export function AppShell({ 

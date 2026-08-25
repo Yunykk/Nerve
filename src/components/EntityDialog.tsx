@@ -100,7 +100,7 @@ export function EntityDialog({ kind, onClose }: EntityDialogProps) {
           >
             Cancel
           </button>
-          <button className="button button--primary" type="submit" disabled={pending}>
+          <button className="button button--solid" type="submit" disabled={pending}>
             <Icon name="plus" width="16" height="16" />
             {pending ? 'Creating…' : 'Create ' + kind}
           </button>
