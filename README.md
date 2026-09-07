@@ -103,4 +103,4 @@ offline reconciliation.
 
 ## License
 
-[MIT](LICENSE)
+[Source Available — All Rights Reserved](LICENSE)
