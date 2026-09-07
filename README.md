@@ -8,7 +8,7 @@
 
 **[Open the live demo](https://yunykk.github.io/Nerve/)**
 
-![Nerve home dashboard](design/comparisons/home-actual.png)
+![Nerve home dashboard](design/references/home.png)
 
 Nerve is a working product slice built around one idea: goals, projects, focus
 sessions, and history should be different views of the same system—not isolated
