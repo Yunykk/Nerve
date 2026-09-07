@@ -1,96 +1,106 @@
 # Nerve
 
-> A personal operating system that connects your time, projects, goals, and devices into one living system.
+> A local-first personal operating system for connecting goals, projects, and focused time.
 
-Nerve is an open-source experiment in treating personal activity as one connected
-system instead of another collection of productivity widgets. Its foundation is a
-small unified model:
+[![CI](https://github.com/Yunykk/Nerve/actions/workflows/ci.yml/badge.svg)](https://github.com/Yunykk/Nerve/actions/workflows/ci.yml)
+[![Deploy](https://github.com/Yunykk/Nerve/actions/workflows/deploy-pages.yml/badge.svg)](https://github.com/Yunykk/Nerve/actions/workflows/deploy-pages.yml)
+[![License: MIT](https://img.shields.io/badge/License-MIT-black.svg)](LICENSE)
 
-- **Entities** are the things in your world: projects, goals, areas, people, and
-  devices.
-- **Events** are immutable facts: an entity was created, a relation was made, or a
-  focus session started or stopped.
-- **Relations** explain how the world fits together, beginning with a project that
-  supports a goal.
+**[Open the live demo](https://yunykk.github.io/Nerve/)**
 
-Phase 1 is a functional, local-first vertical slice. Create a goal and a project,
-connect them, track a focus session, inspect the event history on TIMELINE, and see
-the resulting system on WORLD. There is no account, cloud dependency, analytics
-service, or server required.
+![Nerve home dashboard](design/comparisons/home-actual.png)
 
-## Local setup
+Nerve is a working product slice built around one idea: goals, projects, focus
+sessions, and history should be different views of the same system—not isolated
+productivity widgets. It runs entirely in the browser and persists an immutable
+event stream locally, with no account or backend required.
 
-Requirements:
+## What you can do
 
-- Node.js 22.12 or newer
-- npm 10 or newer
+- Create goals and projects.
+- Connect a project to one or more goals.
+- Start and stop a globally exclusive focus session.
+- See live and per-project focused-time totals for the current day.
+- Filter projects by name or description (`Ctrl/⌘ + K` opens the finder).
+- Inspect every change in a newest-first Timeline.
+- Explore goals, projects, and their relations in the World graph.
+- Reload the app without losing data.
 
-Install and start the development server:
+## Architecture
 
-    npm install
-    npm run dev
+```text
+React UI
+   ↓ command
+NerveStore
+   ↓ validated immutable event
+EventStorage (localStorage)
+   ↓ replay
+Domain projection → Home / Projects / Timeline / World
+```
 
-Vite will print the local URL, normally http://localhost:5173.
+The event stream is the source of truth. Commands validate domain invariants before
+persisting, and the current state is deterministically rebuilt by replaying stored
+events. UI components never access `localStorage` directly, so a remote storage
+adapter can be introduced without rewriting the views.
 
-Data is stored in the browser under the localStorage key
-nerve:event-stream:v1. It stays on the current browser and origin.
+Important invariants include:
 
-## Commands
+- only one focus session can run at a time;
+- relations must connect an existing project to an existing goal;
+- duplicate relations and identifiers are rejected;
+- stale-tab appends are replay-validated before storage is replaced;
+- daily duration calculations correctly clip sessions at local-day boundaries.
 
-    npm run dev          Start the Vite development server
-    npm run typecheck    Run the TypeScript project checks
-    npm run lint         Run ESLint
-    npm test             Run core domain and storage tests once
-    npm run test:watch   Run tests in watch mode
-    npm run build        Typecheck and create a production build
-    npm run preview      Preview the production build
+See [the architecture notes](docs/architecture.md) and [development log](DEVLOG.md)
+for the design decisions and extension points.
 
-## Phase 1 behavior
+## Tech stack
 
-1. Create a goal from the GOALS region on NOW.
-2. Create a project from ACTIVE PROJECTS.
-3. Use the unlinked project action to create a supports relation.
-4. Start and stop focus from the project row.
-5. Inspect the same underlying event stream on TIMELINE and its projection on WORLD.
+- React 19 and TypeScript 6
+- Vite 8
+- Vitest for domain and persistence tests
+- Playwright for the end-to-end product flow
+- Plain CSS and inline SVG; no UI or graph framework
+- GitHub Actions and GitHub Pages
 
-Only one focus session can run at once. Today’s tracked time clips session intervals
-to the current local day and includes the live interval while a session is running.
+## Run locally
 
-## Project structure
+Requirements: Node.js 22.12+ and npm 10+.
 
-    src/
-      components/        Shell, icons, and focused dialogs
-      domain/            Types, commands, projector, selectors, and store
-      hooks/             Small React utilities
-      lib/               Display formatting
-      state/             React boundary around the domain store
-      storage/           Storage interface plus local and memory adapters
-      views/             NOW, TIMELINE, and WORLD
-    docs/
-      architecture.md    Unified-model design and extension points
-    DEVLOG.md            Phase 1 implementation record
+```bash
+git clone https://github.com/Yunykk/Nerve.git
+cd Nerve
+npm ci
+npm run dev
+```
 
-The UI never accesses localStorage directly. It talks to NerveStore, which depends
-on the EventStorage interface. A future Supabase adapter can therefore replace
-local persistence without changing page components.
+The development URL is normally `http://localhost:5173`. Browser data is stored
+under the `nerve:event-stream:v1` localStorage key and never leaves the device.
 
-## Intentionally not in Phase 1
+## Quality checks
 
-Authentication, Supabase, native apps, Screen Time ingestion, calendar ingestion,
-AI features, team workflows, and settings pages are intentionally absent. The
-interface contains no empty navigation or placeholder feature pages.
+```bash
+npm run typecheck
+npm run lint
+npm test
+npm run build
+npm run test:visual
+```
 
-## Logical Phase 2
+The Playwright suite covers the complete baseline journey: create a goal, create a
+project, connect them, start and stop focus, verify the Timeline, and inspect the
+relation in World.
 
-Phase 2 should harden and extend the model before broadening the dashboard:
+## Scope
 
-1. Add event schema migrations and entity lifecycle events such as rename,
-   complete, archive, and relation removal.
-2. Add a small activity capture API and calendar import as the first external
-   event source, with deduplication and provenance.
-3. Add areas and people to WORLD only when they have real create/connect workflows.
-4. Introduce an optional remote EventStorage implementation, offline reconciliation,
-   and multi-device sync.
-5. Add export/import and recovery tools before authentication or native clients.
+This repository deliberately presents a focused local-first vertical slice.
+Authentication, cloud sync, calendar ingestion, native clients, and AI features are
+not represented by placeholder screens.
 
-See [docs/architecture.md](docs/architecture.md) for the design in detail.
+Logical next steps are event-schema migrations, entity lifecycle commands,
+export/import recovery, and an optional remote `EventStorage` implementation with
+offline reconciliation.
+
+## License
+
+[MIT](LICENSE)

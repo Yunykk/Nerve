@@ -1,23 +1,22 @@
 import avatarYuunyk from '../assets/avatar-yuunyk.png'
+import type { AppRoute } from '../App'
 import { Icon, type IconName } from './Icon'
 
 interface NavItem {
   readonly label: string
   readonly icon: IconName
-  readonly href?: '#home' | '#timeline' | '#projects' | '#world' | '#surfaces'
+  readonly href: `#${AppRoute}`
 }
 
 const NAV_ITEMS: readonly NavItem[] = [
   { label: 'Home', icon: 'home', href: '#home' },
-  { label: 'Timeline', icon: 'timeline' },
+  { label: 'Timeline', icon: 'timeline', href: '#timeline' },
   { label: 'Projects', icon: 'projects', href: '#projects' },
-  { label: 'World', icon: 'world' },
-  { label: 'Surfaces', icon: 'surfaces' },
+  { label: 'World', icon: 'world', href: '#world' },
 ]
 
-export function Sidebar() {
-  const currentHref =
-    window.location.hash === '#projects' ? '#projects' : '#home'
+export function Sidebar({ route }: { readonly route: AppRoute }) {
+  const currentHref = `#${route}`
   return (
     <aside className="sidebar" aria-label="Primary navigation">
       <div className="sidebar__brand">nerve</div>
@@ -32,7 +31,6 @@ export function Sidebar() {
               className={'sidebar__item' + (isCurrent ? ' is-current' : '')}
               href={item.href}
               aria-current={isCurrent ? 'page' : undefined}
-              aria-disabled={item.href ? undefined : true}
             >
               <Icon name={item.icon} />
               <span>{item.label}</span>
@@ -42,22 +40,17 @@ export function Sidebar() {
       </nav>
 
       <div className="sidebar__footer">
-        <button className="sidebar__utility" type="button">
+        <a className="sidebar__utility" href="#projects">
           <Icon name="search" />
-          <span>Search</span>
-        </button>
-        <button className="sidebar__utility" type="button">
-          <Icon name="settings" />
-          <span>Settings</span>
-        </button>
+          <span>Find projects</span>
+        </a>
 
         <div className="sidebar__rule" />
 
-        <button className="sidebar__profile" type="button">
+        <div className="sidebar__profile">
           <img src={avatarYuunyk} alt="" />
           <span>Yuunyk</span>
-          <Icon name="chevron" />
-        </button>
+        </div>
       </div>
     </aside>
   )

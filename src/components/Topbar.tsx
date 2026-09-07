@@ -31,13 +31,13 @@ export function Topbar({ title, subtitle }: TopbarProps) {
         <p>{subtitle ?? formattedDate}</p>
       </div>
 
-      <button className="command-search" type="button">
+      <a className="command-search" href="#projects">
         <Icon name="search" />
-        <span>Search or run a command...</span>
+        <span>Find or create a project...</span>
         <span className="command-search__keys" aria-hidden="true">
           <kbd>⌘</kbd><kbd>K</kbd>
         </span>
-      </button>
+      </a>
     </header>
   )
 }

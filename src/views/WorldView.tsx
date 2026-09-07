@@ -152,8 +152,8 @@ export function WorldView() {
             <span>
               {goals.length + projects.length} ENTITIES · {state.relations.length} RELATIONS
             </span>
-            <a href="#now" className="inline-link">
-              Edit on Now <Icon name="arrow" width="15" height="15" />
+            <a href="#projects" className="inline-link">
+              Manage projects <Icon name="arrow" width="15" height="15" />
             </a>
           </div>
 
@@ -177,7 +177,7 @@ export function WorldView() {
             ) : (
               <p className="relation-empty">
                 Entities exist, but no relation has been created yet. Link a project
-                to a goal on NOW.
+                to a goal on Projects.
               </p>
             )}
           </div>
@@ -191,8 +191,8 @@ export function WorldView() {
           <div>
             <p className="eyebrow">0 ENTITIES · 0 RELATIONS</p>
             <h3>Your world has no nodes yet.</h3>
-            <p>Create a goal and a project on NOW. Their relation will appear here.</p>
-            <a className="button button--primary" href="#now">
+            <p>Create a goal and a project on Projects. Their relation will appear here.</p>
+            <a className="button button--solid" href="#projects">
               Build first thread <Icon name="arrow" width="16" height="16" />
             </a>
           </div>

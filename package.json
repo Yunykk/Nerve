@@ -2,6 +2,12 @@
   "name": "nerve",
   "private": true,
   "version": "0.1.0",
+  "description": "A local-first personal operating system for goals, projects, and focused time.",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Yunykk/Nerve.git"
+  },
   "type": "module",
   "engines": {
     "node": ">=22.12.0"

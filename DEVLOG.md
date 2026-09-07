@@ -1,5 +1,17 @@
 # Development log
 
+## Phase 1 — completed baseline slice
+
+- Connected Home, Projects, Timeline, and World through working hash navigation.
+- Added goal and project creation to the current interface and project-to-goal
+  linking to project cards.
+- Added project filtering plus Ctrl/⌘+K navigation to the project finder.
+- Replaced demo attention, screen-time, device, and people content with live
+  projections from the local event stream.
+- Added loading and corrupt-storage error boundaries at the application root.
+- Added a browser test for the complete create → link → focus → timeline → world
+  workflow.
+
 ## Phase 1 — functional vertical slice
 
 Built the first local-first Nerve system with React, TypeScript, Vite, plain CSS,

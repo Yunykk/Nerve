@@ -152,8 +152,8 @@ export function TimelineView() {
               Create your first goal on NOW. Every following entity, relation, and
               session transition will appear here.
             </p>
-            <a className="button button--primary" href="#now">
-              Open Now <Icon name="arrow" width="16" height="16" />
+            <a className="button button--solid" href="#home">
+              Open Home <Icon name="arrow" width="16" height="16" />
             </a>
           </div>
         </div>
