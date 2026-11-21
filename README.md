@@ -1,26 +1,29 @@
 # Nerve
 
-A focus timer should know what you're working toward.
+**i wanted the timer to remember what the work was for.**
 
-Nerve puts goals, projects, and focus sessions in the same browser app. Link a project to a goal, spend time on it, and see where that time went.
+In Nerve, a focus session belongs to a project. A project can point back to a goal. Put in a little time and you can see what it went toward.
 
-**[Open the browser demo](https://yunykk.github.io/Nerve/)**
+**[Open Nerve in your browser](https://yunykk.github.io/Nerve/)**
 
-![Nerve Projects with a project linked to a goal and an active focus session](docs/readme/projects.png)
+![Nerve's World graph linking three example projects to two goals](docs/readme/world.png)
 
-*The Projects view with an example goal and a running session.*
+*World with a demo tape and release night mapped out.*
 
-## Try one loop
+## Give it one thing to remember
 
-1. Create a goal from **Home**. Then create a project under **Projects** and link it to the goal.
-2. Start focus on the project. Only one session can run at a time.
-3. End the session and open **Timeline** to see what happened. Open **World** to see the project and goal connected.
+1. On **Home**, make a goal. Try “finish the demo tape.”
+2. In **Projects**, add “late-night edits” and link it to that goal. Start focus, then end the session. Nerve runs one focus session at a time.
+3. Open **Timeline** to see what happened. Open **World** to see what connects.
 
-Use **Ctrl/⌘ + K** to find a project by name or description.
+You can jump to a project with **Ctrl/⌘ + K**.
 
-## Under the hood
+<details>
+<summary>What happens when you click Start focus?</summary>
 
-React sends commands to the domain store. The store validates them, saves immutable events to browser storage, and replays the events to reconstruct the current state. Home, Projects, Timeline, and World read from that same state. [Architecture notes](docs/architecture.md) · [Development log](DEVLOG.md)
+React sends a command to the domain store. The store checks that another focus session isn't active and appends an immutable event to browser storage. It replays events to rebuild the state that Home, Projects, Timeline, and World read. [Architecture notes](docs/architecture.md) · [Development log](DEVLOG.md)
+
+</details>
 
 ## Run locally
 
@@ -31,7 +34,7 @@ npm ci
 npm run dev
 ```
 
-Open the Vite URL printed in the terminal. It is usually `http://localhost:5173`.
+Open the Vite address printed in the terminal, usually `http://localhost:5173`.
 
 <details>
 <summary>Development checks</summary>
@@ -45,12 +48,12 @@ npx playwright install chromium
 npm run test:visual
 ```
 
-The browser suite covers linking a project to a goal, timing a session, and checking Timeline and World.
+The browser suite links a project to a goal, times a focus session, and checks Timeline and World.
 
 </details>
 
-## Current limits
+## Where the data lives
 
-Data belongs to this browser profile and site origin. Clearing site data removes it. There is no account, sync, or built-in export/import recovery.
+Data belongs to the browser profile and site origin where you created it. Clearing site data removes it. There's no account, sync, or built-in export/import recovery.
 
 The source is available for inspection under the [repository license](LICENSE).
